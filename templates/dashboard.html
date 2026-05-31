@@ -8,67 +8,130 @@
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        [x-cloak] { display: none !important; }
-        * { font-family: 'Inter', sans-serif; }
+        * { font-family: 'Poppins', sans-serif; }
         
-        /* Gradient Background */
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(145deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
             min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
         }
         
-        /* Glass Morphism Cards */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+        /* Animated background pattern */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(255, 107, 107, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(78, 205, 196, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(255, 195, 113, 0.1) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+            pointer-events: none;
         }
         
-        /* Stat Card Hover Effect */
-        .stat-card {
-            transition: all 0.3s ease;
-            cursor: pointer;
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            33% { transform: translate(30px, -30px); }
+            66% { transform: translate(-20px, 20px); }
         }
-        .stat-card:hover {
+        
+        /* Card styles */
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
         
-        /* Button Animations */
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        /* Stat cards unique colors */
+        .stat-pending { border-left: 4px solid #ffd93d; }
+        .stat-applied { border-left: 4px solid #6BCF7F; }
+        .stat-interview-hrd { border-left: 4px solid #a78bfa; }
+        .stat-interview-user { border-left: 4px solid #60a5fa; }
+        .stat-rejected { border-left: 4px solid #ff6b6b; }
+        .stat-accepted { border-left: 4px solid #4ecdc4; }
+        
+        /* Floating Add Button */
+        .fab {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4);
+            cursor: pointer;
             transition: all 0.3s ease;
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+            z-index: 1000;
+            animation: pulse 2s infinite;
         }
         
-        /* Table Row Hover */
+        .fab:hover {
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 15px 40px rgba(255, 107, 107, 0.6);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4); }
+            50% { box-shadow: 0 10px 40px rgba(255, 107, 107, 0.7); }
+        }
+        
+        /* Badge styles */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        
+        .badge:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Table improvements */
         .table-row {
             transition: all 0.2s ease;
         }
+        
         .table-row:hover {
-            background: rgba(102, 126, 234, 0.05);
-            transform: scale(1.01);
+            background: rgba(255, 255, 255, 0.05);
         }
         
-        /* Badge Animations */
-        .badge {
-            animation: fadeIn 0.5s ease;
+        /* Modal */
+        .modal-backdrop {
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal-content {
+            animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
-        }
-        
-        /* Modal Animation */
-        .modal-content {
-            animation: slideUp 0.3s ease;
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
         
         @keyframes slideUp {
@@ -76,336 +139,319 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
-        /* Custom Scrollbar */
+        /* Input focus effects */
+        input:focus, select:focus, textarea:focus {
+            border-color: #ff6b6b !important;
+            ring-color: rgba(255, 107, 107, 0.3) !important;
+        }
+        
+        /* Custom scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
         }
+        
         ::-webkit-scrollbar-track {
-            background: #f1f1f1;
+            background: rgba(255, 255, 255, 0.05);
         }
+        
         ::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(180deg, #ff6b6b, #ee5a6f);
             border-radius: 10px;
         }
         
-        /* Gradient Text */
-        .gradient-text {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .fab {
+                width: 60px;
+                height: 60px;
+                bottom: 20px;
+                right: 20px;
+            }
+            
+            .stat-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Modern Header with Glass Effect -->
-    <nav class="glass-card sticky top-0 z-50">
+    <!-- Minimalist Header -->
+    <nav class="sticky top-0 z-40 backdrop-blur-xl bg-white/5 border-b border-white/10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-20">
-                <div class="flex items-center space-x-4">
-                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg">
-                        <i class="fas fa-briefcase text-white text-xl"></i>
-                    </div>
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center gap-3">
+                    <div class="text-2xl">💼</div>
                     <div>
-                        <h1 class="text-2xl font-bold gradient-text">Job Tracker</h1>
-                        <p class="text-xs text-gray-500">Track your career journey</p>
+                        <h1 class="text-xl font-bold text-white">JobTracker</h1>
+                        <p class="text-xs text-gray-400">by {{or .UserName "You"}}</p>
                     </div>
                 </div>
-                <div class="flex items-center space-x-4">
-                    <div class="hidden md:flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg">
-                        <i class="fas fa-rocket text-purple-600"></i>
-                        <span class="text-sm font-medium text-gray-700">{{.Stats.Total}} Total Applications</span>
+                
+                <div class="flex items-center gap-4">
+                    <div class="hidden sm:block px-4 py-2 rounded-full bg-white/10 text-white text-sm font-medium">
+                        {{.Stats.Total}} applications
                     </div>
-                    <button 
-                        onclick="openAddModal()"
-                        class="btn-primary text-white px-6 py-3 rounded-xl flex items-center gap-2 font-medium shadow-lg"
-                    >
-                        <i class="fas fa-plus-circle"></i>
-                        <span>New Application</span>
-                    </button>
                 </div>
             </div>
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Modern Statistics Cards -->
-        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-8">
-            <!-- Total -->
-            <div class="stat-card glass-card rounded-2xl p-5 border-l-4 border-gray-400">
-                <div class="flex items-center justify-between mb-2">
-                    <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-list text-gray-600"></i>
-                    </div>
-                </div>
-                <div class="text-gray-600 text-xs font-medium uppercase tracking-wide">Total</div>
-                <div class="text-3xl font-bold text-gray-900 mt-1">{{.Stats.Total}}</div>
-            </div>
-            
-            <!-- Belum Apply -->
-            <div class="stat-card glass-card rounded-2xl p-5 border-l-4 border-yellow-400">
-                <div class="flex items-center justify-between mb-2">
-                    <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-clock text-yellow-600"></i>
-                    </div>
-                </div>
-                <div class="text-gray-600 text-xs font-medium uppercase tracking-wide">Pending</div>
-                <div class="text-3xl font-bold text-yellow-600 mt-1">{{.Stats.BelumApply}}</div>
+    <!-- Main Container -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10"
+        <!-- Stats Grid -->
+        <div class="stat-grid grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4 mb-6">
+            <!-- Pending -->
+            <div class="card stat-pending p-4">
+                <div class="text-3xl mb-2">⏳</div>
+                <div class="text-2xl md:text-3xl font-bold text-white mb-1">{{.Stats.BelumApply}}</div>
+                <div class="text-xs text-gray-400 uppercase tracking-wide">Pending</div>
             </div>
             
             <!-- Applied -->
-            <div class="stat-card glass-card rounded-2xl p-5 border-l-4 border-blue-400">
-                <div class="flex items-center justify-between mb-2">
-                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-paper-plane text-blue-600"></i>
-                    </div>
-                </div>
-                <div class="text-gray-600 text-xs font-medium uppercase tracking-wide">Applied</div>
-                <div class="text-3xl font-bold text-blue-600 mt-1">{{.Stats.Applied}}</div>
+            <div class="card stat-applied p-4">
+                <div class="text-3xl mb-2">📤</div>
+                <div class="text-2xl md:text-3xl font-bold text-white mb-1">{{.Stats.Applied}}</div>
+                <div class="text-xs text-gray-400 uppercase tracking-wide">Applied</div>
             </div>
             
             <!-- Interview HRD -->
-            <div class="stat-card glass-card rounded-2xl p-5 border-l-4 border-purple-400">
-                <div class="flex items-center justify-between mb-2">
-                    <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-user-tie text-purple-600"></i>
-                    </div>
-                </div>
-                <div class="text-gray-600 text-xs font-medium uppercase tracking-wide">HRD</div>
-                <div class="text-3xl font-bold text-purple-600 mt-1">{{.Stats.InterviewHRD}}</div>
+            <div class="card stat-interview-hrd p-4">
+                <div class="text-3xl mb-2">🤝</div>
+                <div class="text-2xl md:text-3xl font-bold text-white mb-1">{{.Stats.InterviewHRD}}</div>
+                <div class="text-xs text-gray-400 uppercase tracking-wide">HRD</div>
             </div>
             
             <!-- Interview User -->
-            <div class="stat-card glass-card rounded-2xl p-5 border-l-4 border-indigo-400">
-                <div class="flex items-center justify-between mb-2">
-                    <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-users text-indigo-600"></i>
-                    </div>
-                </div>
-                <div class="text-gray-600 text-xs font-medium uppercase tracking-wide">User</div>
-                <div class="text-3xl font-bold text-indigo-600 mt-1">{{.Stats.InterviewUser}}</div>
+            <div class="card stat-interview-user p-4">
+                <div class="text-3xl mb-2">💬</div>
+                <div class="text-2xl md:text-3xl font-bold text-white mb-1">{{.Stats.InterviewUser}}</div>
+                <div class="text-xs text-gray-400 uppercase tracking-wide">User</div>
             </div>
             
-            <!-- Ditolak -->
-            <div class="stat-card glass-card rounded-2xl p-5 border-l-4 border-red-400">
-                <div class="flex items-center justify-between mb-2">
-                    <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-times-circle text-red-600"></i>
-                    </div>
-                </div>
-                <div class="text-gray-600 text-xs font-medium uppercase tracking-wide">Rejected</div>
-                <div class="text-3xl font-bold text-red-600 mt-1">{{.Stats.Ditolak}}</div>
+            <!-- Rejected -->
+            <div class="card stat-rejected p-4">
+                <div class="text-3xl mb-2">❌</div>
+                <div class="text-2xl md:text-3xl font-bold text-white mb-1">{{.Stats.Ditolak}}</div>
+                <div class="text-xs text-gray-400 uppercase tracking-wide">Rejected</div>
             </div>
             
-            <!-- Diterima -->
-            <div class="stat-card glass-card rounded-2xl p-5 border-l-4 border-green-400">
-                <div class="flex items-center justify-between mb-2">
-                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-check-circle text-green-600"></i>
-                    </div>
-                </div>
-                <div class="text-gray-600 text-xs font-medium uppercase tracking-wide">Accepted</div>
-                <div class="text-3xl font-bold text-green-600 mt-1">{{.Stats.Diterima}}</div>
+            <!-- Accepted -->
+            <div class="card stat-accepted p-4">
+                <div class="text-3xl mb-2">🎉</div>
+                <div class="text-2xl md:text-3xl font-bold text-white mb-1">{{.Stats.Diterima}}</div>
+                <div class="text-xs text-gray-400 uppercase tracking-wide">Accepted</div>
             </div>
         </div>
 
-        <!-- Modern Filters -->
-        <div class="glass-card rounded-2xl p-6 mb-6 shadow-xl" x-data="{ status: '', platform: '', search: '' }">
-            <div class="flex items-center gap-3 mb-4">
-                <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                    <i class="fas fa-filter text-white"></i>
-                </div>
-                <h2 class="text-lg font-bold text-gray-800">Filter & Search</h2>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div class="relative">
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-                        <i class="fas fa-search mr-1 text-gray-400"></i>Search
-                    </label>
+        <!-- Filters -->
+        <div class="card p-4 md:p-6 mb-6" x-data="{ status: '', platform: '', search: '' }">
+            <div class="flex flex-col md:flex-row md:items-end gap-4">
+                <div class="flex-1">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">🔍 Search</label>
                     <input 
                         type="text" 
                         x-model="search"
                         placeholder="Company or position..."
-                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                        class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-white/30 transition"
                     >
                 </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-                        <i class="fas fa-tasks mr-1 text-gray-400"></i>Status
-                    </label>
+                <div class="flex-1">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">📊 Status</label>
                     <select 
                         x-model="status"
-                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                        class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-white/30 transition"
                     >
-                        <option value="">All Status</option>
+                        <option value="">All</option>
                         <option value="Belum Apply">⏳ Pending</option>
-                        <option value="Applied">✈️ Applied</option>
-                        <option value="Interview HRD">👔 Interview HRD</option>
-                        <option value="Interview User">👥 Interview User</option>
+                        <option value="Applied">📤 Applied</option>
+                        <option value="Interview HRD">🤝 Interview HRD</option>
+                        <option value="Interview User">💬 Interview User</option>
                         <option value="Ditolak">❌ Rejected</option>
-                        <option value="Diterima">✅ Accepted</option>
+                        <option value="Diterima">🎉 Accepted</option>
+                    </select>
+                </div>
+                <div class="flex-1">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">🌐 Platform</label>
+                    <select 
+                        x-model="platform"
+                        class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-white/30 transition"
+                    >
+                        <option value="">All</option>
+                        <option value="LinkedIn">LinkedIn</option>
+                        <option value="Glints">Glints</option>
+                        <option value="Jobstreet">Jobstreet</option>
+                        <option value="Company Site">Company Site</option>
+                        <option value="Lainnya">Others</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-                        <i class="fas fa-globe mr-1 text-gray-400"></i>Platform
-                    </label>
-                    <select 
-                        x-model="platform"
-                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
-                    >
-                        <option value="">All Platforms</option>
-                        <option value="LinkedIn">💼 LinkedIn</option>
-                        <option value="Glints">✨ Glints</option>
-                        <option value="Jobstreet">🏢 Jobstreet</option>
-                        <option value="Company Site">🌐 Company Site</option>
-                        <option value="Lainnya">📱 Others</option>
-                    </select>
-                </div>
-                <div class="flex items-end">
                     <button 
                         @click="filterJobs(status, platform, search)"
-                        class="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-xl font-medium transition shadow-lg hover:shadow-xl"
+                        class="w-full md:w-auto px-6 py-3 bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white rounded-lg font-medium transition"
                     >
-                        <i class="fas fa-search mr-2"></i>Apply Filter
+                        Filter
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- Modern Jobs Table -->
-        <div class="glass-card rounded-2xl shadow-xl overflow-hidden">
-            <div class="px-6 py-4 bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-200">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <i class="fas fa-table text-purple-600 text-xl"></i>
-                        <h2 class="text-lg font-bold text-gray-800">Applications List</h2>
-                    </div>
-                    <span class="text-sm text-gray-600">{{.Stats.Total}} total</span>
-                </div>
+        <!-- Applications List -->
+        <div class="card overflow-hidden">
+            <div class="px-4 md:px-6 py-4 border-b border-white/10">
+                <h2 class="text-lg font-bold text-white">📋 Your Applications</h2>
             </div>
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Company</th>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Position</th>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Platform</th>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Status</th>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Link</th>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Date</th>
-                            <th class="px-6 py-4 text-right text-xs font-bold text-gray-600 uppercase tracking-wider">Actions</th>
+            
+            <!-- Desktop Table View -->
+            <div class="hidden md:block overflow-x-auto">
+                <table class="min-w-full">
+                    <thead>
+                        <tr class="border-b border-white/10">
+                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase">Company</th>
+                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase">Position</th>
+                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase">Platform</th>
+                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase">Status</th>
+                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase">Date</th>
+                            <th class="px-6 py-4 text-right text-xs font-medium text-gray-400 uppercase">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200" id="jobs-tbody">
+                    <tbody id="jobs-tbody">
                         {{range .Jobs}}
-                        <tr class="table-row">
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <div class="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-500 rounded-lg flex items-center justify-center mr-3">
-                                        <span class="text-white font-bold text-sm">{{slice .Company 0 1}}</span>
+                        <tr class="table-row border-b border-white/5">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-red-400 to-pink-500 flex items-center justify-center text-white font-bold">
+                                        {{slice .Company 0 1}}
                                     </div>
-                                    <div class="text-sm font-semibold text-gray-900">{{.Company}}</div>
+                                    <span class="font-semibold text-white">{{.Company}}</span>
                                 </div>
                             </td>
+                            <td class="px-6 py-4 text-gray-300">{{.Position}}</td>
                             <td class="px-6 py-4">
-                                <div class="text-sm font-medium text-gray-900">{{.Position}}</div>
+                                <span class="badge bg-white/10 text-gray-300">{{.Platform}}</span>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gradient-to-r from-gray-100 to-gray-200 text-gray-800">
-                                    {{if eq .Platform "LinkedIn"}}💼
-                                    {{else if eq .Platform "Glints"}}✨
-                                    {{else if eq .Platform "Jobstreet"}}🏢
-                                    {{else if eq .Platform "Company Site"}}🌐
-                                    {{else}}📱{{end}}
-                                    {{.Platform}}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="badge px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-lg 
-                                    {{if eq .Status "Belum Apply"}}bg-yellow-100 text-yellow-800
-                                    {{else if eq .Status "Applied"}}bg-blue-100 text-blue-800
-                                    {{else if eq .Status "Interview HRD"}}bg-purple-100 text-purple-800
-                                    {{else if eq .Status "Interview User"}}bg-indigo-100 text-indigo-800
-                                    {{else if eq .Status "Ditolak"}}bg-red-100 text-red-800
-                                    {{else if eq .Status "Diterima"}}bg-green-100 text-green-800
+                            <td class="px-6 py-4">
+                                <span class="badge
+                                    {{if eq .Status "Belum Apply"}}bg-yellow-500/20 text-yellow-300
+                                    {{else if eq .Status "Applied"}}bg-green-500/20 text-green-300
+                                    {{else if eq .Status "Interview HRD"}}bg-purple-500/20 text-purple-300
+                                    {{else if eq .Status "Interview User"}}bg-blue-500/20 text-blue-300
+                                    {{else if eq .Status "Ditolak"}}bg-red-500/20 text-red-300
+                                    {{else if eq .Status "Diterima"}}bg-cyan-500/20 text-cyan-300
                                     {{end}}">
                                     {{if eq .Status "Belum Apply"}}⏳
-                                    {{else if eq .Status "Applied"}}✈️
-                                    {{else if eq .Status "Interview HRD"}}👔
-                                    {{else if eq .Status "Interview User"}}👥
+                                    {{else if eq .Status "Applied"}}📤
+                                    {{else if eq .Status "Interview HRD"}}🤝
+                                    {{else if eq .Status "Interview User"}}💬
                                     {{else if eq .Status "Ditolak"}}❌
-                                    {{else if eq .Status "Diterima"}}✅
+                                    {{else if eq .Status "Diterima"}}🎉
                                     {{end}}
                                     {{.Status}}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                {{if .JobLink}}
-                                <a href="{{.JobLink}}" target="_blank" class="inline-flex items-center px-3 py-1 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg transition">
-                                    <i class="fas fa-external-link-alt mr-1"></i>
-                                    View
-                                </a>
-                                {{else}}
-                                <span class="text-gray-400">-</span>
-                                {{end}}
+                            <td class="px-6 py-4 text-sm text-gray-400">
+                                {{if .AppliedDate}}{{.AppliedDate.Format "02/01/2006"}}{{else}}-{{end}}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 font-medium">
-                                {{if .AppliedDate}}
-                                    <i class="fas fa-calendar-alt mr-1 text-gray-400"></i>
-                                    {{.AppliedDate.Format "02/01/2006"}}
-                                {{else}}
-                                    <span class="text-gray-400">-</span>
-                                {{end}}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <button 
-                                    onclick='editJob({{.ID}})'
-                                    class="inline-flex items-center px-3 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg mr-2 transition"
-                                    title="Edit"
-                                >
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button 
-                                    onclick='deleteJob({{.ID}})'
-                                    class="inline-flex items-center px-3 py-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg transition"
-                                    title="Delete"
-                                >
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </td>
-                        </tr>
-                        {{else}}
-                        <tr>
-                            <td colspan="7" class="px-6 py-16 text-center">
-                                <div class="flex flex-col items-center justify-center">
-                                    <div class="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mb-4">
-                                        <i class="fas fa-inbox text-4xl text-gray-400"></i>
-                                    </div>
-                                    <h3 class="text-lg font-semibold text-gray-700 mb-2">No applications yet</h3>
-                                    <p class="text-gray-500 mb-4">Start tracking your job applications now!</p>
-                                    <button 
-                                        onclick="openAddModal()"
-                                        class="btn-primary text-white px-6 py-2 rounded-lg font-medium"
-                                    >
-                                        <i class="fas fa-plus mr-2"></i>Add First Application
+                            <td class="px-6 py-4">
+                                <div class="flex items-center justify-end gap-2">
+                                    {{if .JobLink}}
+                                    <a href="{{.JobLink}}" target="_blank" class="p-2 hover:bg-white/10 rounded-lg transition text-gray-400 hover:text-white" title="View Job">
+                                        <i class="fas fa-external-link-alt"></i>
+                                    </a>
+                                    {{end}}
+                                    <button onclick='editJob({{.ID}})' class="p-2 hover:bg-white/10 rounded-lg transition text-gray-400 hover:text-white" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button onclick='deleteJob({{.ID}})' class="p-2 hover:bg-white/10 rounded-lg transition text-gray-400 hover:text-red-400" title="Delete">
+                                        <i class="fas fa-trash"></i>
                                     </button>
                                 </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="6" class="px-6 py-16 text-center">
+                                <div class="text-6xl mb-4">📭</div>
+                                <h3 class="text-xl font-semibold text-white mb-2">No applications yet</h3>
+                                <p class="text-gray-400 mb-6">Click the red button to add your first application!</p>
                             </td>
                         </tr>
                         {{end}}
                     </tbody>
                 </table>
             </div>
+            
+            <!-- Mobile Card View -->
+            <div class="md:hidden divide-y divide-white/10">
+                {{range .Jobs}}
+                <div class="p-4 hover:bg-white/5 transition">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="flex items-center gap-3 flex-1">
+                            <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-red-400 to-pink-500 flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
+                                {{slice .Company 0 1}}
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="font-semibold text-white truncate">{{.Company}}</h3>
+                                <p class="text-sm text-gray-400 truncate">{{.Position}}</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-2 ml-2">
+                            {{if .JobLink}}
+                            <a href="{{.JobLink}}" target="_blank" class="p-2 hover:bg-white/10 rounded-lg transition text-gray-400">
+                                <i class="fas fa-external-link-alt text-sm"></i>
+                            </a>
+                            {{end}}
+                            <button onclick='editJob({{.ID}})' class="p-2 hover:bg-white/10 rounded-lg transition text-gray-400">
+                                <i class="fas fa-edit text-sm"></i>
+                            </button>
+                            <button onclick='deleteJob({{.ID}})' class="p-2 hover:bg-white/10 rounded-lg transition text-red-400">
+                                <i class="fas fa-trash text-sm"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <span class="badge text-xs bg-white/10 text-gray-300">{{.Platform}}</span>
+                        <span class="badge text-xs
+                            {{if eq .Status "Belum Apply"}}bg-yellow-500/20 text-yellow-300
+                            {{else if eq .Status "Applied"}}bg-green-500/20 text-green-300
+                            {{else if eq .Status "Interview HRD"}}bg-purple-500/20 text-purple-300
+                            {{else if eq .Status "Interview User"}}bg-blue-500/20 text-blue-300
+                            {{else if eq .Status "Ditolak"}}bg-red-500/20 text-red-300
+                            {{else if eq .Status "Diterima"}}bg-cyan-500/20 text-cyan-300
+                            {{end}}">
+                            {{.Status}}
+                        </span>
+                        {{if .AppliedDate}}
+                        <span class="text-xs text-gray-500">{{.AppliedDate.Format "02 Jan 2006"}}</span>
+                        {{end}}
+                    </div>
+                </div>
+                {{else}}
+                <div class="p-8 text-center">
+                    <div class="text-6xl mb-4">📭</div>
+                    <h3 class="text-lg font-semibold text-white mb-2">No applications yet</h3>
+                    <p class="text-gray-400 mb-4">Tap the + button to add!</p>
+                </div>
+                {{end}}
+            </div>
         </div>
     </div>
 
-    <!-- Modern Add/Edit Modal -->
-    <div id="jobModal" class="hidden fixed inset-0 bg-black bg-opacity-50 overflow-y-auto h-full w-full z-50 backdrop-blur-sm">
-        <div class="modal-content relative top-10 mx-auto p-0 border-0 w-full max-w-2xl shadow-2xl rounded-2xl bg-white my-8">
-            <!-- Modal Header -->
+    <!-- Floating Action Button -->
+    <button onclick="openAddModal()" class="fab" title="Add Application">
+        <i class="fas fa-plus text-2xl text-white"></i>
+    </button>
+
+    <!-- Modern Modal -->
+    <div id="jobModal" class="modal-backdrop hidden fixed inset-0 bg-black/60 overflow-y-auto h-full w-full z-50">
+        <div class="modal-content relative top-10 mx-auto p-0 w-full max-w-2xl my-8 mx-4 md:mx-auto">
+            <div class="card overflow-hidden">
+                <!-- Modal Header -->
+                <div class="px-6 py-4 border-b border-white/10 flex items-center justify-between">
+                    <h3 class="text-xl font-bold text-white" id="modalTitle">Add New Application</h3>
+                    <button onclick="closeModal()" class="text-gray-400 hover:text-white transition">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
             <div class="bg-gradient-to-r from-blue-500 to-purple-600 px-6 py-5 rounded-t-2xl">
                 <div class="flex justify-between items-center">
                     <div class="flex items-center gap-3">
@@ -420,112 +466,98 @@
                 </div>
             </div>
             
-            <!-- Modal Body -->
-            <div class="px-6 py-6">
-                <form id="jobForm" onsubmit="saveJob(event)">
+                <!-- Modal Body -->
+                <form id="jobForm" onsubmit="saveJob(event)" class="p-6 space-y-4">
                     <input type="hidden" id="jobId">
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                <i class="fas fa-building mr-1 text-gray-400"></i>Company Name *
-                            </label>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Company *</label>
                             <input 
                                 type="text" 
                                 id="company" 
                                 required
-                                placeholder="e.g., Google Indonesia"
-                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                                placeholder="e.g., Google"
+                                class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-red-500 transition"
                             >
                         </div>
                         
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                <i class="fas fa-briefcase mr-1 text-gray-400"></i>Position *
-                            </label>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Position *</label>
                             <input 
                                 type="text" 
                                 id="position" 
                                 required
                                 placeholder="e.g., Frontend Developer"
-                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                                class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-red-500 transition"
                             >
                         </div>
                         
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                <i class="fas fa-globe mr-1 text-gray-400"></i>Platform *
-                            </label>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Platform *</label>
                             <select 
                                 id="platform" 
                                 required
-                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                                class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-red-500 transition"
                             >
-                                <option value="LinkedIn">💼 LinkedIn</option>
-                                <option value="Glints">✨ Glints</option>
-                                <option value="Jobstreet">🏢 Jobstreet</option>
-                                <option value="Company Site">🌐 Company Site</option>
-                                <option value="Lainnya">📱 Others</option>
+                                <option value="LinkedIn">LinkedIn</option>
+                                <option value="Glints">Glints</option>
+                                <option value="Jobstreet">Jobstreet</option>
+                                <option value="Company Site">Company Site</option>
+                                <option value="Lainnya">Others</option>
                             </select>
                         </div>
                         
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                <i class="fas fa-tasks mr-1 text-gray-400"></i>Status *
-                            </label>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Status *</label>
                             <select 
                                 id="status" 
                                 required
-                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                                class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-red-500 transition"
                             >
-                                <option value="Belum Apply">⏳ Pending</option>
-                                <option value="Applied">✈️ Applied</option>
-                                <option value="Interview HRD">👔 Interview HRD</option>
-                                <option value="Interview User">👥 Interview User</option>
-                                <option value="Ditolak">❌ Rejected</option>
-                                <option value="Diterima">✅ Accepted</option>
+                                <option value="Belum Apply">Pending</option>
+                                <option value="Applied">Applied</option>
+                                <option value="Interview HRD">Interview HRD</option>
+                                <option value="Interview User">Interview User</option>
+                                <option value="Ditolak">Rejected</option>
+                                <option value="Diterima">Accepted</option>
                             </select>
                         </div>
                     </div>
                     
-                    <div class="mt-5">
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">
-                            <i class="fas fa-link mr-1 text-gray-400"></i>Job Link
-                        </label>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Job Link</label>
                         <input 
                             type="url" 
                             id="jobLink" 
-                            placeholder="https://example.com/job-posting"
-                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                            placeholder="https://..."
+                            class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-red-500 transition"
                         >
                     </div>
                     
-                    <div class="mt-5">
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">
-                            <i class="fas fa-sticky-note mr-1 text-gray-400"></i>Notes
-                        </label>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Notes</label>
                         <textarea 
                             id="notes" 
-                            rows="4"
-                            placeholder="Add any additional notes here..."
-                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition resize-none"
+                            rows="3"
+                            placeholder="Add notes..."
+                            class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-red-500 transition resize-none"
                         ></textarea>
                     </div>
                     
-                    <!-- Modal Footer -->
-                    <div class="mt-8 flex justify-end gap-3">
+                    <div class="flex gap-3 pt-2">
                         <button 
                             type="button" 
                             onclick="closeModal()"
-                            class="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 font-medium transition"
+                            class="flex-1 px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-lg font-medium transition"
                         >
-                            <i class="fas fa-times mr-2"></i>Cancel
+                            Cancel
                         </button>
                         <button 
                             type="submit"
-                            class="btn-primary text-white px-8 py-3 rounded-xl font-medium shadow-lg"
+                            class="flex-1 px-6 py-3 bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white rounded-lg font-medium transition"
                         >
-                            <i class="fas fa-save mr-2"></i>Save
+                            Save
                         </button>
                     </div>
                 </form>
@@ -533,16 +565,9 @@
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="mt-16 pb-8">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="glass-card rounded-2xl p-6 text-center">
-                <p class="text-sm text-gray-600">
-                    <i class="fas fa-heart text-red-500 mx-1"></i>
-                    Built with Go, Fiber, PostgreSQL & Tailwind CSS
-                </p>
-                <p class="text-xs text-gray-500 mt-2">Track your career journey efficiently</p>
-            </div>
+    <script src="/static/app.js"></script>
+</body>
+</html>
         </div>
     </footer>
 
